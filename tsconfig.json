@@ -3,6 +3,11 @@
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "node:zlib": ["src/polyfills/node-zlib.ts"],
+      "zlib": ["src/polyfills/node-zlib.ts"]
+    },
     "experimentalDecorators": true,
     "sourceMap": true,
     "lib": [
