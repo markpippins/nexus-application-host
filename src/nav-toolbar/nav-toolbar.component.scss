@@ -1,0 +1,121 @@
+app-nav-toolbar {
+  display: block;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.nav-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 56px; /* w-14 equivalent */
+  padding: 16px 0;
+  gap: 4px;
+  background: rgb(var(--color-surface));
+  border-right: 1px solid rgb(var(--color-border-base));
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.nav-toolbar-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: rgb(var(--color-text-subtle));
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nav-toolbar-btn:hover {
+  color: rgb(var(--color-text-muted));
+  background: rgb(var(--color-surface-hover-subtle));
+}
+
+.nav-toolbar-btn.active {
+  color: rgb(var(--color-accent-text));
+  background: rgb(var(--color-accent-bg));
+}
+
+.nav-toolbar-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.orb-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 0;
+  flex-shrink: 0;
+}
+
+.nav-toolbar-divider {
+  width: 32px;
+  height: 1px;
+  background: rgb(var(--color-border-base));
+  margin: 4px 0 8px 0;
+  flex-shrink: 0;
+  border-radius: 1px;
+  opacity: 0.6;
+}
+
+.nav-toolbar-separator {
+  width: 28px;
+  height: 1px;
+  background: rgb(var(--color-border-base));
+  margin: 6px 0;
+  flex-shrink: 0;
+  border-radius: 1px;
+  opacity: 0.35;
+}
+
+/* Collapse / Expand button — pinned to the bottom of the toolbar */
+.nav-toolbar-collapse-btn {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* ── Collapsed state ────────────────────────────────── */
+.nav-toolbar.is-collapsed {
+  width: 24px;
+  padding: 8px 0;
+  overflow: hidden;
+}
+
+/* Fade out hidden elements using opacity + visibility (animatable, unlike display) */
+.nav-toolbar.is-collapsed .orb-wrapper,
+.nav-toolbar.is-collapsed .nav-toolbar-divider,
+.nav-toolbar.is-collapsed .nav-toolbar-btn:not(.nav-toolbar-collapse-btn) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.nav-toolbar.is-collapsed .nav-toolbar-collapse-btn {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  margin-top: 0;
+}
+
+/* Transition for smooth collapse/expand */
+.nav-toolbar {
+  transition: width 250ms ease-in-out, padding 250ms ease-in-out;
+}
+
+.nav-toolbar > * {
+  transition: opacity 200ms ease, visibility 200ms ease;
+}

@@ -1,0 +1,98 @@
+<div
+  class="flex h-screen antialiased text-[rgb(var(--color-text-base))] bg-[rgb(var(--color-background))]"
+>
+  <!-- Left Nav Toolbar (always visible — stays up when iframes are shown) -->
+  <app-nav-toolbar
+    [viewMode]="currentViewMode()"
+    [collapsed]="isNavCollapsed()"
+    (viewModeChange)="currentViewMode.set($event)"
+    (collapseToggled)="onNavCollapseToggle()"
+  ></app-nav-toolbar>
+
+  <div class="flex flex-col flex-1 min-w-0">
+    <!-- Address Bar -->
+    <div
+      class="h-12 px-4 border-b border-[rgb(var(--color-border-base))] flex items-center space-x-2 flex-shrink-0 bg-[rgb(var(--color-surface-muted))]"
+    >
+      <div
+        class="flex-grow flex items-center bg-[rgb(var(--color-background))] rounded-md border border-[rgb(var(--color-border-muted))] px-2 py-1 text-sm font-mono truncate"
+        title="{{ addressBarText() }}"
+      >
+        {{ addressBarText() }}
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-row overflow-hidden relative">
+      <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+        <div class="flex-1 flex flex-row overflow-hidden min-w-0">
+          @if (isIframeMode() && currentIframeUrl(); as url) {
+            <app-iframe-view [src]="url" class="flex-1 w-full h-full"></app-iframe-view>
+          } @else {
+            <!-- Empty content pane for non-iframe modes -->
+            <div
+              class="flex-1 bg-[rgb(var(--color-background))]"
+            ></div>
+          }
+        </div>
+      </div>
+    </main>
+
+    <!-- Console Pane (terminal) -->
+    @if (!isConsoleCollapsed() && !isTerminalMaximized()) {
+      <!-- Resizer for Console -->
+      <div
+        data-console-resizer
+        (mousedown)="startConsolePaneResize($event)"
+        class="h-1.5 w-full flex-shrink-0 cursor-row-resize group flex items-center justify-center bg-[rgb(var(--color-surface-muted))] border-y border-[rgb(var(--color-border-base))]"
+      >
+        <div
+          class="h-0.5 w-full bg-[rgb(var(--color-border-muted))] group-hover:bg-[rgb(var(--color-accent-ring))] transition-colors duration-200"
+        ></div>
+      </div>
+    }
+
+    <!-- Console Pane -->
+    <div
+      data-console-pane
+      class="flex flex-col flex-shrink-0 bg-[rgb(var(--color-surface-muted))]"
+      [class.fixed]="isTerminalMaximized()"
+      [class.inset-0]="isTerminalMaximized()"
+      [class.z-50]="isTerminalMaximized()"
+      [style.height.px]="!isConsoleCollapsed() && !isTerminalMaximized() ? consolePaneHeight() : undefined"
+      [class.h-6]="isConsoleCollapsed()"
+      [class.border-t]="isConsoleCollapsed()"
+      [class.border-[rgb(var(--color-border-base))]]="isConsoleCollapsed()"
+    >
+      @if (isConsoleCollapsed()) {
+        <div class="flex items-center justify-between px-4 h-6">
+          <span class="text-xs text-[rgb(var(--color-text-muted))]">Console</span>
+          <button
+            (click)="toggleConsole()"
+            title="Expand Console"
+            class="p-2 -mr-2 rounded-md text-[rgb(var(--color-text-muted))] hover:bg-[rgb(var(--color-surface-hover))] transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      } @else {
+        <app-terminal
+          (collapse)="toggleConsole()"
+          (maximizeToggle)="toggleMaximize()"
+          [isMaximized]="isTerminalMaximized()"
+          [remoteShellUrl]="'ws://localhost:3120'"
+        ></app-terminal>
+      }
+    </div>
+
+    <!-- Bottom Status Bar -->
+    <app-bottom-bar
+      [statusInfo]="statusBarSelectionInfo()"
+      [statusCounts]="''"
+      [imageBaseUrl]="defaultImageUrl()"
+      (aiconfigClick)="onAiconfigClick()"
+    ></app-bottom-bar>
+  </div>
+</div>
