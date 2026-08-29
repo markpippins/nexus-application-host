@@ -15,7 +15,7 @@ import { NavToolbarComponent } from './nav-toolbar/nav-toolbar.component.js';
 import { TerminalComponent } from './components/terminal/terminal.component.js';
 import { BottomBarComponent, ViewMode } from './bottom-bar/bottom-bar.component.js';
 import { IframeViewComponent } from './components/iframe-view/iframe-view.component.js';
-import { UiPreferencesService } from './services/ui-preferences.service.js';
+import { UiPreferencesService, Theme } from './services/ui-preferences.service.js';
 import { LocalConfigService } from './services/local-config.service.js';
 
 /**
@@ -110,6 +110,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Default image server URL for the bottom-bar site icons. */
   defaultImageUrl = computed(() => this.localConfigService.defaultImageUrl());
 
+  /** Hamburger menu state and current theme signal. */
+  isMenuOpen = signal(false);
+  currentTheme = this.uiPreferencesService.theme;
+
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
@@ -123,6 +127,35 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopConsoleResize();
+  }
+
+  // ── Hamburger Menu & Theme Selection ───────────────────────────
+  toggleMenu(event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isMenuOpen.update((open) => !open);
+  }
+
+  closeMenu(): void {
+    this.isMenuOpen.set(false);
+  }
+
+  selectTheme(theme: Theme): void {
+    this.uiPreferencesService.setTheme(theme);
+  }
+
+  themeDisplayName(theme: Theme): string {
+    switch (theme) {
+      case 'theme-light':
+        return 'Light';
+      case 'theme-steel':
+        return 'Steel';
+      case 'theme-dark':
+        return 'Dark';
+      default:
+        return 'Steel';
+    }
   }
 
   // ── Nav toolbar ────────────────────────────────────────────────
@@ -172,8 +205,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     // AI configuration popup is out of scope for the host shell.
   }
 
-  // ── Host handlers (kept minimal — no file-explorer shortcuts) ──
-  onKeyDown(_event: KeyboardEvent): void {}
+  // ── Host handlers ──────────────────────────────────────────────
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.isMenuOpen()) {
+      this.closeMenu();
+    }
+  }
 
-  onDocumentClick(_event: MouseEvent): void {}
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isMenuOpen()) {
+      return;
+    }
+    const target = event.target as HTMLElement | null;
+    if (target && !target.closest('#top-bar-menu-container')) {
+      this.closeMenu();
+    }
+  }
 }

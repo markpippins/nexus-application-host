@@ -94,6 +94,13 @@ export class UiPreferencesService {
     effect(() => {
       this.savePreferences();
     });
+    effect(() => {
+      const theme = this.preferences().theme;
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('theme-light', 'theme-steel', 'theme-dark');
+        document.body.classList.add(theme);
+      }
+    });
   }
 
   private loadPreferences(): void {

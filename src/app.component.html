@@ -10,15 +10,218 @@
   ></app-nav-toolbar>
 
   <div class="flex flex-col flex-1 min-w-0">
-    <!-- Address Bar -->
+    <!-- Top Bar / Address Bar -->
     <div
-      class="h-12 px-4 border-b border-[rgb(var(--color-border-base))] flex items-center space-x-2 flex-shrink-0 bg-[rgb(var(--color-surface-muted))]"
+      class="h-12 px-4 border-b border-[rgb(var(--color-border-base))] flex items-center justify-between space-x-3 flex-shrink-0 bg-[rgb(var(--color-surface-muted))] relative z-30"
     >
       <div
-        class="flex-grow flex items-center bg-[rgb(var(--color-background))] rounded-md border border-[rgb(var(--color-border-muted))] px-2 py-1 text-sm font-mono truncate"
+        class="flex-grow flex items-center bg-[rgb(var(--color-background))] rounded-md border border-[rgb(var(--color-border-muted))] px-3 py-1 text-sm font-mono truncate"
         title="{{ addressBarText() }}"
       >
         {{ addressBarText() }}
+      </div>
+
+      <!-- Hamburger Menu Container on the right side -->
+      <div id="top-bar-menu-container" class="relative flex-shrink-0">
+        <button
+          id="top-bar-menu-button"
+          type="button"
+          (click)="toggleMenu($event)"
+          [class.bg-[rgb(var(--color-surface-hover))]]="isMenuOpen()"
+          class="flex items-center justify-center w-8 h-8 rounded-md text-[rgb(var(--color-text-muted))] hover:text-[rgb(var(--color-text-base))] hover:bg-[rgb(var(--color-surface-hover))] border border-transparent hover:border-[rgb(var(--color-border-muted))] transition-colors focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-accent-ring))] cursor-pointer"
+          [attr.aria-expanded]="isMenuOpen()"
+          aria-haspopup="true"
+          aria-label="Settings and Theme Menu"
+          title="Menu & Theme Options"
+        >
+          <!-- Hamburger Icon (3 lines) -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+
+        <!-- Dropdown Menu -->
+        @if (isMenuOpen()) {
+          <div
+            id="top-bar-dropdown-menu"
+            class="absolute right-0 mt-2 w-72 rounded-xl bg-[rgb(var(--color-surface-dialog))] border border-[rgb(var(--color-border-base))] shadow-xl z-50 p-3 animate-fade-in text-[rgb(var(--color-text-base))]"
+            (click)="$event.stopPropagation()"
+          >
+            <!-- Menu Header -->
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-[rgb(var(--color-border-base))]">
+              <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[rgb(var(--color-accent-text))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+                </svg>
+                <span class="text-xs font-semibold uppercase tracking-wider text-[rgb(var(--color-text-muted))]">Appearance</span>
+              </div>
+              <button
+                id="close-dropdown-button"
+                type="button"
+                (click)="closeMenu()"
+                class="text-[rgb(var(--color-text-subtle))] hover:text-[rgb(var(--color-text-base))] p-1 rounded-md hover:bg-[rgb(var(--color-surface-hover))] cursor-pointer transition-colors"
+                aria-label="Close menu"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Theme Select Section -->
+            <div class="py-1">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-[rgb(var(--color-text-muted))] flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-[rgb(var(--color-text-subtle))]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l9.75 9.75" />
+                  </svg>
+                  Theme Select
+                </span>
+                <span class="text-[11px] font-mono text-[rgb(var(--color-accent-text))] font-semibold">
+                  {{ themeDisplayName(currentTheme()) }}
+                </span>
+              </div>
+
+              <!-- 3-way Segmented Toggle -->
+              <div class="grid grid-cols-3 gap-1 bg-[rgb(var(--color-surface-muted))] p-1 rounded-lg border border-[rgb(var(--color-border-base))]">
+                <!-- Light -->
+                <button
+                  id="theme-toggle-light"
+                  type="button"
+                  (click)="selectTheme('theme-light')"
+                  [class.bg-[rgb(var(--color-surface))]]="currentTheme() === 'theme-light'"
+                  [class.text-[rgb(var(--color-accent-text))]]="currentTheme() === 'theme-light'"
+                  [class.font-semibold]="currentTheme() === 'theme-light'"
+                  [class.shadow-sm]="currentTheme() === 'theme-light'"
+                  [class.text-[rgb(var(--color-text-muted))]]="currentTheme() !== 'theme-light'"
+                  class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs transition-all hover:text-[rgb(var(--color-text-base))] cursor-pointer"
+                  title="Switch to Light theme"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
+                  <span>Light</span>
+                </button>
+
+                <!-- Steel -->
+                <button
+                  id="theme-toggle-steel"
+                  type="button"
+                  (click)="selectTheme('theme-steel')"
+                  [class.bg-[rgb(var(--color-surface))]]="currentTheme() === 'theme-steel'"
+                  [class.text-[rgb(var(--color-accent-text))]]="currentTheme() === 'theme-steel'"
+                  [class.font-semibold]="currentTheme() === 'theme-steel'"
+                  [class.shadow-sm]="currentTheme() === 'theme-steel'"
+                  [class.text-[rgb(var(--color-text-muted))]]="currentTheme() !== 'theme-steel'"
+                  class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs transition-all hover:text-[rgb(var(--color-text-base))] cursor-pointer"
+                  title="Switch to Steel theme"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
+                  </svg>
+                  <span>Steel</span>
+                </button>
+
+                <!-- Dark -->
+                <button
+                  id="theme-toggle-dark"
+                  type="button"
+                  (click)="selectTheme('theme-dark')"
+                  [class.bg-[rgb(var(--color-surface))]]="currentTheme() === 'theme-dark'"
+                  [class.text-[rgb(var(--color-accent-text))]]="currentTheme() === 'theme-dark'"
+                  [class.font-semibold]="currentTheme() === 'theme-dark'"
+                  [class.shadow-sm]="currentTheme() === 'theme-dark'"
+                  [class.text-[rgb(var(--color-text-muted))]]="currentTheme() !== 'theme-dark'"
+                  class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs transition-all hover:text-[rgb(var(--color-text-base))] cursor-pointer"
+                  title="Switch to Dark theme"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                  </svg>
+                  <span>Dark</span>
+                </button>
+              </div>
+
+              <!-- Theme Detail List Selectors -->
+              <div class="mt-2.5 space-y-1">
+                <button
+                  id="theme-item-light"
+                  type="button"
+                  (click)="selectTheme('theme-light')"
+                  class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs hover:bg-[rgb(var(--color-surface-hover))] transition-colors cursor-pointer"
+                  [class.bg-[rgb(var(--color-accent-bg))]]="currentTheme() === 'theme-light'"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-4 h-4 rounded-full border border-gray-400 bg-white flex items-center justify-center shadow-xs flex-shrink-0">
+                      @if (currentTheme() === 'theme-light') {
+                        <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                      }
+                    </div>
+                    <div class="text-left">
+                      <div class="font-medium text-[rgb(var(--color-text-base))]">Light</div>
+                      <div class="text-[10px] text-[rgb(var(--color-text-subtle))]">High contrast bright workspace</div>
+                    </div>
+                  </div>
+                  @if (currentTheme() === 'theme-light') {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[rgb(var(--color-accent-text))] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  }
+                </button>
+
+                <button
+                  id="theme-item-steel"
+                  type="button"
+                  (click)="selectTheme('theme-steel')"
+                  class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs hover:bg-[rgb(var(--color-surface-hover))] transition-colors cursor-pointer"
+                  [class.bg-[rgb(var(--color-accent-bg))]]="currentTheme() === 'theme-steel'"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-4 h-4 rounded-full border border-gray-600 bg-gray-800 flex items-center justify-center shadow-xs flex-shrink-0">
+                      @if (currentTheme() === 'theme-steel') {
+                        <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                      }
+                    </div>
+                    <div class="text-left">
+                      <div class="font-medium text-[rgb(var(--color-text-base))]">Steel</div>
+                      <div class="text-[10px] text-[rgb(var(--color-text-subtle))]">Slate navy & dark gray surface</div>
+                    </div>
+                  </div>
+                  @if (currentTheme() === 'theme-steel') {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[rgb(var(--color-accent-text))] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  }
+                </button>
+
+                <button
+                  id="theme-item-dark"
+                  type="button"
+                  (click)="selectTheme('theme-dark')"
+                  class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs hover:bg-[rgb(var(--color-surface-hover))] transition-colors cursor-pointer"
+                  [class.bg-[rgb(var(--color-accent-bg))]]="currentTheme() === 'theme-dark'"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-4 h-4 rounded-full border border-gray-700 bg-black flex items-center justify-center shadow-xs flex-shrink-0">
+                      @if (currentTheme() === 'theme-dark') {
+                        <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                      }
+                    </div>
+                    <div class="text-left">
+                      <div class="font-medium text-[rgb(var(--color-text-base))]">Dark</div>
+                      <div class="text-[10px] text-[rgb(var(--color-text-subtle))]">OLED black & dark obsidian</div>
+                    </div>
+                  </div>
+                  @if (currentTheme() === 'theme-dark') {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[rgb(var(--color-accent-text))] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        }
       </div>
     </div>
 
